@@ -1,5 +1,6 @@
 var mysql = require("mysql");
 var inquirer = require("inquirer");
+var dotenv = require("dotenv").config();
 var {table} = require("table");
 var itemList = new Array();
 
@@ -13,7 +14,7 @@ var connection = mysql.createConnection({
     user: "root",
 
     // Your password
-    password: "password",
+    password: process.env.DB_PASSWORD,
     database: "bamazon"
     });
 
@@ -73,10 +74,6 @@ function sufficientQty(itemId, numUnits){
     console.log("sufficient qty...");
     connection.query("select stock_quantity, price from products where item_id = '" + itemId + "'", function(err, res) {
         if (err) throw err;
-        console.log("Inside Qty quey...");
-        console.log("Num Units: " + numUnits);
-        console.log("Qty avail: " + res[0].stock_quantity);
-        console.log("Sun: " + numUnits + res[0].stock_quantity);
         if(parseInt(numUnits) < parseInt(res[0].stock_quantity)){
             processSale(itemId, numUnits, res[0].stock_quantity, res[0].price);
         }else{
@@ -91,7 +88,8 @@ function processSale(itemId, numUnits, stockQty, unitPrice){
         "UPDATE products SET ? WHERE ?",
         [
           {
-            stock_quantity: stockQty - numUnits
+            stock_quantity: stockQty - numUnits,
+            product_sales: numUnits * unitPrice
           },
           {
             item_id: itemId

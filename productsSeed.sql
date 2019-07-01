@@ -7,7 +7,7 @@ product_name VARCHAR(100) NOT NULL,
 department_id INTEGER NOT NULL,
 price NUMERIC(10) NOT NULL,
 stock_quantity NUMERIC(10) NOT NULL,
-product_sales numeric(10),
+product_sales NUMERIC(10)  DEFAULT 0,
 FOREIGN KEY (department_id) REFERENCES departments(dept_id)
 );
 
