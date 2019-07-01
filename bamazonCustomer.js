@@ -33,8 +33,12 @@ connection.query("select item_id, product_name, price from	products order by pro
 }
 
 function displayItems(itemsToDisplay){
+  console.log(`
+  -----------------------------------
+          Products For Sale
+  -----------------------------------
+      `);
     var displayArr = [["ID", "ITEM", "PRICE"]];
-    //debugger;
     for(let i = 0; i < itemsToDisplay.length; i++){
         displayArr.push([itemsToDisplay[i].item_id, itemsToDisplay[i].product_name, itemsToDisplay[i].price]);
     }
@@ -71,7 +75,6 @@ function postSale(){
 }
 
 function sufficientQty(itemId, numUnits){
-    console.log("sufficient qty...");
     connection.query("select stock_quantity, price from products where item_id = '" + itemId + "'", function(err, res) {
         if (err) throw err;
         if(parseInt(numUnits) < parseInt(res[0].stock_quantity)){
@@ -83,7 +86,6 @@ function sufficientQty(itemId, numUnits){
 }
 
 function processSale(itemId, numUnits, stockQty, unitPrice){
-    console.log("in process Sale....");//////////////////////////////
     connection.query(
         "UPDATE products SET ? WHERE ?",
         [
