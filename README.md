@@ -1,6 +1,8 @@
 # Bamazon
 A node app that manages purchases, sales and inventory for the Bamazon store. The app has three operational modes.
 
+## Developer - Avinash Singh.
+
 * ### Customer Mode
     * Displays items available for purchase that have more than zero inventory.
     * Allows customer to purchase an item by entering the item id and then the quantity.
