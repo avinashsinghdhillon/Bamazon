@@ -24,7 +24,7 @@ var connection = mysql.createConnection({
 });
 
 function getItems (){
-connection.query("select item_id, product_name, price from	products order by product_name", function(err, res) {
+connection.query("select item_id, product_name, price from	products where stock_quantity > 0 order by product_name", function(err, res) {
     if (err) throw err;
     itemList = res;
     displayItems(itemList);
@@ -77,10 +77,11 @@ function postSale(){
 function sufficientQty(itemId, numUnits){
     connection.query("select stock_quantity, price from products where item_id = '" + itemId + "'", function(err, res) {
         if (err) throw err;
-        if(parseInt(numUnits) < parseInt(res[0].stock_quantity)){
+        if(parseInt(numUnits) <= parseInt(res[0].stock_quantity)){
             processSale(itemId, numUnits, res[0].stock_quantity, res[0].price);
         }else{
             console.log("Insufficient Quantity!!!");
+            connection.end();
         }
         });
 }
