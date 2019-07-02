@@ -55,7 +55,7 @@ function showProducts(){
             Products For Sale
 ----------------------------------------
     `);
-    connection.query("select item_id, product_name, price, stock_quantity from	products order by product_name", function(err, res) {
+    let query = connection.query("select item_id, product_name, price, stock_quantity from	products order by product_name", function(err, res) {
         if (err) throw err;
         var displayArr = [["ID", "ITEM", "PRICE", "Quantity"]];
         for(let i = 0; i < res.length; i++){
@@ -75,7 +75,7 @@ function showLowInventory(){
             Low Inventory
 ----------------------------------------
     `);
-    connection.query("select item_id, product_name, price, stock_quantity from	products where stock_quantity < 5 order by product_name", function(err, res) {
+    let query = connection.query("select item_id, product_name, price, stock_quantity from	products where stock_quantity < 5 order by product_name", function(err, res) {
         if (err) throw err;
         var displayArr = [["ID", "ITEM", "PRICE", "Quantity"]];
         for(let i = 0; i < res.length; i++){
@@ -95,7 +95,13 @@ function addInventory(){
       {
         name: "itemId",
         type: "number",
-        message: "Enter the ID of the item you want to add inventory for."
+        message: "Enter the ID of the item you want to add inventory for.",
+        validate: function(value) {
+          if (isNaN(value) === false) {
+            return true;
+          }
+          return false;
+        }
       },
       {
         name: "numUnits",
@@ -110,13 +116,93 @@ function addInventory(){
       }
     ])
     .then(function(answer) {
-        connection.query("UPDATE products SET stock_quantity = stock_quantity + " + answer.numUnits + " WHERE item_id = " + answer.itemId, function(err) {
-              if (err){
-                throw err;
-              }
-              console.log("Inventory added.");
-              connection.end();
-            }
-          );
+      let query = connection.query("UPDATE products SET stock_quantity = stock_quantity + " + answer.numUnits + " WHERE item_id = " + answer.itemId, function(err) {
+          if (err){
+            throw err;
+          }
+          console.log("Inventory added.");
+          connection.end();
+        }
+      );
     });
+}
+
+function addProduct(){
+  //first get the list of categories/dept_name from the departments table
+  let categoryList = new Array();
+  let categories = new Array();
+  let query = connection.query("SELECT dept_id, dept_name from departments", function(err, results) {
+    if (err){
+      throw err;
+    }
+    for(let i = 0; i < results.length; i++){
+      let catData = {
+        id:results[i].dept_id,
+        category:results[i].dept_name
+      }
+      categoryList.push(catData);
+      categories.push(results[i].dept_name);
+    }
+
+    inquirer.prompt([
+      {
+        type: "list",
+        name: "catSelected",
+        message: "Select the category for the new product: ",
+        choices: categories
+      },
+      {
+        name: "prodName",
+        type: "input",
+        message: "Enter the product name: ",
+      },
+      {
+        name: "unitPrice",
+        type: "number",
+        message: "Enter the product price per unit: ",
+        validate: function(value) {
+          if (isNaN(value) === false) {
+            return true;
+          }
+          return false;
+        }
+      },
+      {
+        name: "stockQuantity",
+        type: "number",
+        message: "Enter the product's quantity in stock: ",
+        validate: function(value) {
+          if (isNaN(value) === false) {
+            return true;
+          }
+          return false;
+        },
+        default: 0
+      }
+    ])
+    .then(function(answer) {
+      //find the deptID from the categoryList
+      let deptID = categoryList[categories.indexOf(answer.catSelected)].id;
+
+      //Add the new data row to the products table
+      query = connection.query(
+        "INSERT INTO products SET ?",
+          {
+            product_name: answer.prodName,
+            department_id: deptID,
+            price: answer.unitPrice,
+            stock_quantity: answer.stockQuantity
+          },
+        function(err) {
+            if (err){
+              throw err;
+            }
+            console.log("Product added.");
+            connection.end();
+          }
+        );
+    });
+
+    }
+  );
 }
