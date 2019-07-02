@@ -11,7 +11,7 @@ A node app that manages purchases, sales and inventory for the Bamazon store. Th
         * #### View Products for Sale.
             Displays a list of products available for sale and their inventory
         * #### View Low Inventory.
-            Displayes a list of products that have less than 5 units in stock
+            Displays a list of products that have less than 5 units in stock
         * #### Add to Inventory.
             Allows the manager to select the ID of the item and then add number of units to the inventory
         * #### Add a new Product
