@@ -7,7 +7,7 @@ select
     sum(p.product_sales) as product_sales,
     sum(p.product_sales) - d.dept_overhead as "total_profit"
 from
-	departments d inner join
+	departments d left outer join
     products p
 on
 	d.dept_id = p.department_id
